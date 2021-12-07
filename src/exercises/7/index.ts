@@ -38,6 +38,8 @@ interface Admin {
     role: string;
 }
 
+type Person = Admin | User;
+
 function logUser(user: User) {
     const pos = users.indexOf(user) + 1;
     console.log(` - #${pos} User: ${user.name}, ${user.age}, ${user.occupation}`);
@@ -78,7 +80,7 @@ const users: User[] = [
     }
 ];
 
-export function swap(v1, v2) {
+export function swap<T1, T2>(v1: T1, v2: T2): [T2, T1] {
     return [v2, v1];
 }
 

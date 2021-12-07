@@ -31,7 +31,17 @@ interface Admin {
     role: string;
 }
 
-type PowerUser = unknown;
+/*
+ {
+    type //no
+    name: string; //both
+    age: number; //both
+    occupation: string;//user
+    role: string;//admin
+ }
+ */
+
+type PowerUser = Pick<User, "age" | "name" | "occupation"> & Pick<Admin, "age" | "name" | "role"> & {type: 'powerUser'};
 
 export type Person = User | Admin | PowerUser;
 

@@ -2,5 +2,11 @@
 import 'date-wizard';
 
 declare module 'date-wizard' {
-    // Add your module extensions here.
+    interface DateDetails {
+        year: number;
+        month: number;
+        date: number;
+    }
+
+    const pad: (s: number) => string;
 }

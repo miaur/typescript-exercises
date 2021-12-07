@@ -85,13 +85,41 @@ export function logPerson(person: Person) {
     console.log(` - ${person.name}, ${person.age}, ${additionalInformation}`);
 }
 
-export function filterUsers(persons: Person[], criteria: User): User[] {
+export function filterUsers(persons: Person[], criteria: Partial<User>): User[] {
     return persons.filter(isUser).filter((user) => {
         const criteriaKeys = Object.keys(criteria) as (keyof User)[];
         return criteriaKeys.every((fieldName) => {
             return user[fieldName] === criteria[fieldName];
         });
     });
+}
+
+type Criteria = Partial<{
+  type: 'user' | 'admin';
+  name: string;
+  age: number;
+  occupation: string; //user
+  role: string //admin
+}>
+export function filterPersons(persons: Person[], criteria: Criteria): Person[] {
+  return persons.filter((person) => {
+      const criteriaKeys = Object.keys(criteria) as (keyof Criteria)[];
+      return criteriaKeys.every((fieldName) => {
+          switch(fieldName) {
+            case 'role': {
+              if(isAdmin(person)) return person[fieldName] === criteria[fieldName];
+              break;
+            }
+            case 'occupation': {
+              if(isUser(person)) return person[fieldName] === criteria[fieldName];
+              break;
+            }
+            default: {
+              return person[fieldName] === criteria[fieldName];
+            }
+          }
+      });
+  });
 }
 
 console.log('Users of age 23:');
@@ -101,6 +129,14 @@ filterUsers(
     {
         age: 23
     }
+).forEach(logPerson);
+
+filterPersons(
+  persons,
+  {
+    age: 23,
+    role: 'Administrator'
+  }
 ).forEach(logPerson);
 
 // In case if you are stuck:

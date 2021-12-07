@@ -1,5 +1,5 @@
 import {IsTypeEqual, IsTypeAssignable, Not, FirstArgument, SecondArgument, typeAssert} from 'type-assertions';
-import {logPerson, isUser, isAdmin, Person, persons, filterUsers} from './index';
+import {logPerson, isUser, isAdmin, Person, persons, filterUsers, filterPersons} from './index';
 
 typeAssert<
     IsTypeAssignable<
@@ -50,6 +50,13 @@ typeAssert<
     IsTypeEqual<
         Person,
         {name: string; age: number} & ({type: 'user'; occupation: string} | {type: 'admin'; role: string})
+    >
+>();
+
+typeAssert<
+    IsTypeEqual<
+        ReturnType<typeof filterPersons>,
+        ({type: 'user'; name: string; age: number; occupation: string} | {type: 'admin'; name: string; age: number; role: string})[]
     >
 >();
 
