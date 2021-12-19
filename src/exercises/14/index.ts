@@ -28,6 +28,18 @@ Bonus:
 
 */
 
+export type Mapper<T, U> = (value: T, index: number, array: T[]) => U;
+export type MapFunction<T, U> = (mapper?: Mapper<T, U>, input?: Array<T>) => Array<U> | MapFunction<T, U> | SubMapFunction<T, U>;
+export type SubMapFunction<T, U> = (input?: Array<T>) => Array<U> | SubMapFunction<T, U>;
+
+
+export function map<T, U>(): MapFunction<T, U>;
+export function map<T, U>(mapper: Mapper<T, U>): SubMapFunction<T, U>;
+export function map<T, U>(mapper: Mapper<T, U>, input: Array<T>): Array<U>;
+
+// export function subFunction<T, U>() : SubMapFunction<T, U>;
+// export function subFunction<T, U>(subInput: Array<T>) : Array<U>;
+
 /**
  * 2 arguments passed: returns a new array
  * which is a result of input being mapped using
@@ -43,20 +55,28 @@ Bonus:
  * @param {Array} input
  * @return {Array | Function}
  */
-export function map(mapper, input) {
+export function map<T, U>(mapper?: Mapper<T, U>, input?: Array<T>): Array<U> | MapFunction<T, U> | SubMapFunction<T, U> {
     if (arguments.length === 0) {
-        return map;
+        return map; //MapFunction<T, U>
     }
     if (arguments.length === 1) {
-        return function subFunction(subInput) {
+        return function subFunction(subInput?: Array<T>) {
             if (arguments.length === 0) {
-                return subFunction;
+                return subFunction; //SubMapFunction<T, U>
             }
-            return subInput.map(mapper);
+            return subInput.map(mapper); //Array<U>
         };
     }
-    return input.map(mapper);
+    return input.map(mapper); //Array<U>
 }
+
+export type Filterer<T> = (value: T, index: number, array: T[]) => unknown;
+export type FilterFunction<T> = (filterer?: Filterer<T>, input?: Array<T>) => Array<T> | SubFiltererFunction<T> | FilterFunction<T>;
+export type SubFiltererFunction<T> = (input?: Array<T>) => Array<T> | SubFiltererFunction<T>;
+
+export function filter<T, U>(): FilterFunction<T>;
+export function filter<T, U>(filterer: Filterer<T>): SubFiltererFunction<T>;
+export function filter<T, U>(filterer: Filterer<T>, input: Array<T>): Array<T>;
 
 /**
  * 2 arguments passed: returns a new array
@@ -74,20 +94,27 @@ export function map(mapper, input) {
  * @param {Array} input
  * @return {Array | Function}
  */
-export function filter(filterer, input) {
+export function filter<T, U>(filterer?: Filterer<T>, input?: Array<T>): Array<T> | SubFiltererFunction<T> | FilterFunction<T> {
     if (arguments.length === 0) {
-        return filter;
+        return filter; //FilterFunction<T>
     }
     if (arguments.length === 1) {
         return function subFunction(subInput) {
             if (arguments.length === 0) {
-                return subFunction;
+                return subFunction; //SubFiltererFunction<T>
             }
-            return subInput.filter(filterer);
+            return subInput.filter(filterer); //Array<T>
         };
     }
-    return input.filter(filterer);
+    return input.filter(filterer); //Array<T>
 }
+
+// export type Reducer: () => any;
+// export type ReduceFunction<T>: (reducer: Reducer, initialValue, input: Array<T>) => 
+
+// export function reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T): T;
+// export function reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): T;
+// export function reduce<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;
 
 /**
  * 3 arguments passed: reduces input array it using the
@@ -117,12 +144,12 @@ export function filter(filterer, input) {
  * @param {Array} input
  * @return {* | Function}
  */
-export function reduce(reducer, initialValue, input) {
+export function reduce<T>(reducer, initialValue, input) {
     if (arguments.length === 0) {
         return reduce;
     }
     if (arguments.length === 1) {
-        return function subFunction(subInitialValue, subInput) {
+        return function subFunction(subInitialValue, subInput: Array<T>) {
             if (arguments.length === 0) {
                 return subFunction;
             }
@@ -134,8 +161,8 @@ export function reduce(reducer, initialValue, input) {
                     return subSubInput.reduce(reducer, subInitialValue);
                 };
             }
-            return subInput.reduce(reducer,subInitialValue);
-        }
+            return subInput.reduce(reducer, subInitialValue);
+        };
     }
     if (arguments.length === 2) {
         return function subFunction(subInput) {
@@ -147,6 +174,16 @@ export function reduce(reducer, initialValue, input) {
     }
     return input.reduce(reducer, initialValue);
 }
+
+export type AddFunction = (a?: number, b?: number) => number | AddFunction | SubAddFunction;
+export type SubAddFunction = (subB?: number) => number | SubAddFunction;
+
+export function add(): AddFunction;
+export function add(a: number): number | SubAddFunction;
+export function add(a: number, b: number): number;
+
+// export function subFunction(): SubAddFunction;
+// export function subFunction(subB: number): number;
 
 /**
  * 2 arguments passed: returns sum of a and b.
@@ -160,12 +197,12 @@ export function reduce(reducer, initialValue, input) {
  * @param {Number} b
  * @return {Number | Function}
  */
-export function add(a, b) {
+export function add(a?: number, b?: number): number | AddFunction | SubAddFunction {
     if (arguments.length === 0) {
         return add;
     }
     if (arguments.length === 1) {
-        return function subFunction(subB) {
+        return function subFunction(subB?: number): number | SubAddFunction {
             if (arguments.length === 0) {
                 return subFunction;
             }
@@ -188,12 +225,12 @@ export function add(a, b) {
  * @param {Number} b
  * @return {Number | Function}
  */
-export function subtract(a, b) {
+export function subtract(a?: number, b?: number): number | AddFunction | SubAddFunction  {
     if (arguments.length === 0) {
         return subtract;
     }
     if (arguments.length === 1) {
-        return function subFunction(subB) {
+        return function subFunction(subB?: number): number | SubAddFunction {
             if (arguments.length === 0) {
                 return subFunction;
             }
@@ -202,6 +239,13 @@ export function subtract(a, b) {
     }
     return a - b;
 }
+
+export type PropFunction = (obj?:Object, propName?: string) => PropFunction | unknown | SubPropFunction;
+export type SubPropFunction = (subPropName?: string) => SubPropFunction | unknown;
+
+export function prop(): PropFunction;
+export function prop(obj:Object): SubPropFunction | unknown;
+export function prop(obj:Object, propName: string): unknown;
 
 /**
  * 2 arguments passed: returns value of property
@@ -217,20 +261,23 @@ export function subtract(a, b) {
  * @param {String} propName
  * @return {* | Function}
  */
-export function prop(obj, propName) {
+export function prop(obj?:Object, propName?: string): PropFunction | unknown | SubPropFunction {
     if (arguments.length === 0) {
-        return prop;
+        return prop; //PropFunction
     }
     if (arguments.length === 1) {
-        return function subFunction(subPropName) {
+        return function subFunction(subPropName?: string): SubPropFunction | unknown {
             if (arguments.length === 0) {
-                return subFunction;
+                return subFunction; //SubPropFunction
             }
-            return obj[subPropName];
+            return obj[subPropName]; //unknown
         };
     }
-    return obj[propName];
+    return obj[propName]; //unknown
 }
+
+export type PipeFunction = (functions?: Array<()=>unknown>) => PipeFunction | SubPipeFunction;
+export type SubPipeFunction = () => any;
 
 /**
  * >0 arguments passed: expects each argument to be
@@ -253,17 +300,17 @@ export function prop(obj, propName) {
  * @param {Function[]} functions
  * @return {*}
  */
-export function pipe(...functions) {
-    if (arguments.length === 0) {
-        return pipe;
-    }
-    return function subFunction() {
-        let nextArguments = Array.from(arguments);
-        let result;
-        for (const func of functions) {
-            result = func(...nextArguments);
-            nextArguments = [result];
-        }
-        return result;
-    };
-}
+// export function pipe(...functions: Array<(functions: PipeFunction)=>PipeFunction | SubPipeFunction>): PipeFunction | SubPipeFunction {
+//     if (arguments.length === 0) {
+//         return pipe; //PipeFunction
+//     }
+//     return function subFunction(): any {
+//         let nextArguments: Array<()=>unknown> = Array.from(arguments);
+//         let result;
+//         for (const func of functions) {
+//             result = func(...nextArguments);
+//             nextArguments = [result];
+//         }
+//         return result;
+//     };
+// }
